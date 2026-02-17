@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "description": "Album de estampas del Mundial FIFA 2026",
   "scripts": {
-    "build": "cd client && npm install && npm run build && cd ../server && npm install && npx prisma generate && npx prisma migrate deploy && node prisma/seed.js",
-    "start": "cd server && node src/index.js"
+    "install:client": "npm install --prefix client",
+    "install:server": "npm install --prefix server",
+    "build:client": "npm run build --prefix client",
+    "build:server": "cd server && npx prisma generate && npx prisma migrate deploy && node prisma/seed.js",
+    "build": "npm run install:client && npm run build:client && npm run install:server && npm run build:server",
+    "start": "node server/src/index.js"
   },
   "engines": {
     "node": ">=18"
