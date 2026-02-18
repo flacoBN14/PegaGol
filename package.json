@@ -6,7 +6,7 @@
     "install:client": "cd client && npm install --include=dev",
     "install:server": "cd server && npm install --include=dev",
     "build:client": "cd client && npm run build",
-    "build:server": "cd server && npx prisma generate && npx prisma migrate deploy && node prisma/seed.js",
+    "build:server": "node build-server.js",
     "build": "npm run install:client && npm run build:client && npm run install:server && npm run build:server",
     "start": "node server/src/index.js"
   },
