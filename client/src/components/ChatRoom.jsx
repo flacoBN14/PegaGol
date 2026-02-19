@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser } from '../context/UserContext';
 import { getMessages, sendMessage } from '../lib/api';
-import socket from '../lib/socket';
 
 export default function ChatRoom({ otherUser, onBack }) {
   const { user } = useUser();
@@ -21,15 +20,11 @@ export default function ChatRoom({ otherUser, onBack }) {
 
   useEffect(() => { loadMessages(); }, [loadMessages]);
 
+  // Poll for new messages (demo mode - no socket)
   useEffect(() => {
-    const handler = (msg) => {
-      if (msg.senderId === otherUser.id || msg.receiverId === otherUser.id) {
-        loadMessages();
-      }
-    };
-    socket.on('new_message', handler);
-    return () => socket.off('new_message', handler);
-  }, [otherUser.id, loadMessages]);
+    const interval = setInterval(() => loadMessages(), 3000);
+    return () => clearInterval(interval);
+  }, [loadMessages]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });

@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '../context/UserContext';
 import { getUserTrades, updateTrade } from '../lib/api';
-import socket from '../lib/socket';
 
 export default function Trades() {
   const { user } = useUser();
@@ -23,9 +22,10 @@ export default function Trades() {
 
   useEffect(() => { loadTrades(); }, [loadTrades]);
 
+  // Poll for trade updates (demo mode - no socket)
   useEffect(() => {
-    socket.on('trade_notification', () => loadTrades());
-    return () => socket.off('trade_notification');
+    const interval = setInterval(() => loadTrades(), 5000);
+    return () => clearInterval(interval);
   }, [loadTrades]);
 
   const handleAction = async (tradeId, status) => {

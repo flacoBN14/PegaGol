@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '../context/UserContext';
 import { getConversations } from '../lib/api';
-import socket from '../lib/socket';
 import ChatRoom from '../components/ChatRoom';
 
 export default function Chat() {
@@ -24,11 +23,11 @@ export default function Chat() {
 
   useEffect(() => { loadConversations(); }, [loadConversations]);
 
+  // Poll for new messages (demo mode - no socket)
   useEffect(() => {
-    socket.on('new_message', () => {
-      if (!activeChat) loadConversations();
-    });
-    return () => socket.off('new_message');
+    if (activeChat) return;
+    const interval = setInterval(() => loadConversations(), 5000);
+    return () => clearInterval(interval);
   }, [activeChat, loadConversations]);
 
   if (activeChat) {

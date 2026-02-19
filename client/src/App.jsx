@@ -1,7 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { UserProvider, useUser } from './context/UserContext';
-import { useEffect } from 'react';
-import socket from './lib/socket';
 
 import Splash from './pages/Splash';
 import Register from './pages/Register';
@@ -18,27 +16,10 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
-function SocketConnector() {
-  const { user } = useUser();
-
-  useEffect(() => {
-    if (user) {
-      socket.connect();
-      socket.emit('register', user.id);
-    } else {
-      socket.disconnect();
-    }
-    return () => socket.disconnect();
-  }, [user]);
-
-  return null;
-}
-
 export default function App() {
   return (
     <UserProvider>
       <BrowserRouter>
-        <SocketConnector />
         <Routes>
           <Route path="/" element={<Splash />} />
           <Route path="/registro" element={<Register />} />

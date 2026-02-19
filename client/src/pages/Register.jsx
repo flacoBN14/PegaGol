@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import { registerUser, getUsers } from '../lib/api';
+import { registerUser } from '../lib/api';
 
 const SALONES = ['5-A', '5-B', '5-C', '6-A', '6-B', '6-C'];
 
