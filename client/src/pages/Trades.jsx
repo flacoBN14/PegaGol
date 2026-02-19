@@ -46,16 +46,18 @@ export default function Trades() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-dorado text-sm animate-pulse uppercase tracking-wider">Cargando...</div>
+        <div className="text-white/20 text-[11px] animate-pulse uppercase tracking-[0.2em]">Cargando...</div>
       </div>
     );
   }
 
   return (
-    <div className="px-4 pt-4 pb-4">
-      <h2 className="text-[10px] text-white/30 uppercase tracking-[0.2em] mb-3">INTERCAMBIOS</h2>
+    <div className="px-5 pt-5 pb-4">
+      <h2 className="font-display text-[28px] text-white leading-none tracking-wide mb-1">CAMBIOS</h2>
+      <p className="text-[9px] text-white/15 tracking-[0.2em] uppercase mb-5">Tus intercambios de estampas</p>
 
-      <div className="flex gap-2 mb-4">
+      {/* Filters */}
+      <div className="flex gap-[1px] mb-5 bg-white/[0.04]">
         {[
           { key: 'all', label: 'TODOS' },
           { key: 'pending', label: 'PENDIENTES' },
@@ -64,11 +66,8 @@ export default function Trades() {
           <button
             key={key}
             onClick={() => setFilter(key)}
-            className={`px-4 py-1.5 rounded-sm text-[10px] font-bold transition-colors uppercase tracking-wider
-              ${filter === key
-                ? 'bg-dorado text-negro'
-                : 'bg-white/5 text-white/30 hover:bg-white/10'
-              }`}
+            className={`flex-1 py-2.5 text-[9px] font-bold transition-all tracking-[0.15em]
+              ${filter === key ? 'bg-white text-negro' : 'bg-negro text-white/20 hover:text-white/35'}`}
           >
             {label}
           </button>
@@ -76,84 +75,74 @@ export default function Trades() {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="text-center text-white/20 mt-10">
-          <p className="text-4xl mb-2">🔄</p>
-          <p className="text-xs uppercase tracking-wider">No hay intercambios todavia</p>
-          <p className="text-[10px] text-white/10 mt-1">Busca estampas y propone cambios</p>
+        <div className="text-center mt-16">
+          <div className="w-12 h-12 border border-white/[0.06] flex items-center justify-center mx-auto mb-4">
+            <svg className="w-5 h-5 text-white/15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+          </div>
+          <p className="text-[10px] text-white/15 tracking-[0.15em] uppercase">No hay intercambios</p>
+          <p className="text-[8px] text-white/10 mt-1 tracking-wider">Busca estampas y propone cambios</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-[2px]">
           {filtered.map((trade) => {
             const isMine = trade.fromUserId === user.id;
             const otherUser = isMine ? trade.toUser : trade.fromUser;
             const sc = {
-              pending: { bg: 'bg-negro-light', border: 'border-dorado/20', text: 'PENDIENTE', color: 'text-dorado' },
-              accepted: { bg: 'bg-negro-light', border: 'border-verde/20', text: 'ACEPTADO', color: 'text-verde' },
-              rejected: { bg: 'bg-negro-light', border: 'border-red-500/20', text: 'RECHAZADO', color: 'text-red-400' },
+              pending: { text: 'PENDIENTE', color: 'text-white/40', border: 'border-white/[0.06]' },
+              accepted: { text: 'ACEPTADO', color: 'text-[#00c853]', border: 'border-[#00c853]/20' },
+              rejected: { text: 'RECHAZADO', color: 'text-[#f44336]', border: 'border-[#f44336]/20' },
             }[trade.status];
 
             return (
-              <div key={trade.id} className={`${sc.bg} border ${sc.border} rounded-sm p-4`}>
+              <div key={trade.id} className={`card-adidas ${sc.border} p-4`}>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-white/5 rounded-sm flex items-center justify-center
-                                    text-white/50 text-xs font-bold">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 bg-white/[0.04] flex items-center justify-center text-white/30 text-[11px] font-bold">
                       {otherUser.nombre[0]}
                     </div>
                     <div>
-                      <div className="font-bold text-xs text-white/70 uppercase">
+                      <div className="font-semibold text-[11px] text-white/60 tracking-wide">
                         {isMine ? `Para ${otherUser.nombre}` : `De ${otherUser.nombre}`}
                       </div>
-                      <div className="text-[10px] text-white/20">Salon {otherUser.salon}</div>
+                      <div className="text-[9px] text-white/15">{otherUser.salon}</div>
                     </div>
                   </div>
-                  <span className={`text-[9px] font-bold ${sc.color} uppercase tracking-wider`}>{sc.text}</span>
+                  <span className={`text-[8px] font-bold ${sc.color} tracking-[0.15em]`}>{sc.text}</span>
                 </div>
 
-                <div className="flex items-center justify-center gap-3">
-                  <div className="flex-1 text-center bg-white/[0.03] rounded-sm p-2">
-                    <div className="text-[9px] text-white/20 mb-1 uppercase">
-                      {isMine ? 'Tu das' : 'Te da'}
-                    </div>
-                    <div className="text-[10px] font-bold text-dorado">{trade.offerSticker.codigo}</div>
-                    <div className="text-[8px] text-white/30 truncate">{trade.offerSticker.nombreJugador}</div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 text-center bg-white/[0.02] py-2.5">
+                    <div className="text-[8px] text-white/15 mb-1 uppercase tracking-wider">{isMine ? 'Das' : 'Te da'}</div>
+                    <div className="text-[11px] font-bold text-white/50">{trade.offerSticker.codigo}</div>
+                    <div className="text-[7px] text-white/20 truncate px-1">{trade.offerSticker.nombreJugador}</div>
                   </div>
-
-                  <span className="text-dorado text-sm">⇄</span>
-
-                  <div className="flex-1 text-center bg-white/[0.03] rounded-sm p-2">
-                    <div className="text-[9px] text-white/20 mb-1 uppercase">
-                      {isMine ? 'Recibes' : 'Quiere'}
-                    </div>
-                    <div className="text-[10px] font-bold text-dorado">{trade.requestSticker.codigo}</div>
-                    <div className="text-[8px] text-white/30 truncate">{trade.requestSticker.nombreJugador}</div>
+                  <svg className="w-4 h-4 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                  </svg>
+                  <div className="flex-1 text-center bg-white/[0.02] py-2.5">
+                    <div className="text-[8px] text-white/15 mb-1 uppercase tracking-wider">{isMine ? 'Recibes' : 'Quiere'}</div>
+                    <div className="text-[11px] font-bold text-white/50">{trade.requestSticker.codigo}</div>
+                    <div className="text-[7px] text-white/20 truncate px-1">{trade.requestSticker.nombreJugador}</div>
                   </div>
                 </div>
 
                 {trade.status === 'pending' && !isMine && (
-                  <div className="flex gap-2 mt-3">
-                    <button
-                      onClick={() => handleAction(trade.id, 'accepted')}
-                      className="flex-1 bg-verde text-white py-2 rounded-sm text-[10px] font-bold
-                                 uppercase tracking-wider hover:bg-verde-dark transition-colors active:scale-[0.98]"
-                    >
+                  <div className="flex gap-[1px] mt-3">
+                    <button onClick={() => handleAction(trade.id, 'accepted')}
+                      className="flex-1 bg-white text-negro py-2.5 text-[9px] font-bold uppercase tracking-[0.1em] hover:bg-white/90 transition-colors active:scale-[0.98]">
                       ACEPTAR
                     </button>
-                    <button
-                      onClick={() => handleAction(trade.id, 'rejected')}
-                      className="flex-1 bg-white/5 text-red-400 border border-red-500/20 py-2 rounded-sm
-                                 text-[10px] font-bold uppercase tracking-wider hover:bg-red-500/10
-                                 transition-colors active:scale-[0.98]"
-                    >
+                    <button onClick={() => handleAction(trade.id, 'rejected')}
+                      className="flex-1 bg-white/[0.04] text-white/30 border border-white/[0.06] py-2.5 text-[9px] font-bold uppercase tracking-[0.1em] hover:bg-white/[0.06] transition-colors active:scale-[0.98]">
                       RECHAZAR
                     </button>
                   </div>
                 )}
 
                 {trade.status === 'pending' && isMine && (
-                  <p className="text-center text-[10px] text-white/15 mt-3 uppercase tracking-wider">
-                    Esperando respuesta...
-                  </p>
+                  <p className="text-center text-[9px] text-white/10 mt-3 tracking-[0.15em] uppercase">Esperando respuesta...</p>
                 )}
               </div>
             );

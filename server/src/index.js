@@ -1,3 +1,8 @@
+// Ensure DATABASE_URL is set for Prisma
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = "file:./dev.db";
+}
+
 const express = require("express");
 const http = require("http");
 const path = require("path");

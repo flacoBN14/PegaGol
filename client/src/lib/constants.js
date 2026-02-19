@@ -53,7 +53,7 @@ export const CONFEDERATIONS = [
   {
     id: 'PLAYOFF',
     name: 'REPECHAJE',
-    fullName: 'Repechaje',
+    fullName: 'Por Confirmar',
     emoji: '🏟️',
     teams: ['Bolivia', 'Irak', 'Italia', 'Jamaica', 'RD Congo', 'Turquia'],
   },
@@ -117,6 +117,80 @@ export const FLAGS = {
   'Turquia': '🇹🇷',
 };
 
+// Codigos ISO para obtener banderas circulares del CDN
+export const ISO_CODES = {
+  // CONCACAF
+  'Mexico': 'mx',
+  'Estados Unidos': 'us',
+  'Canada': 'ca',
+  'Panama': 'pa',
+  'Haiti': 'ht',
+  'Curazao': 'cw',
+  // CONMEBOL
+  'Argentina': 'ar',
+  'Brasil': 'br',
+  'Colombia': 'co',
+  'Ecuador': 'ec',
+  'Paraguay': 'py',
+  'Uruguay': 'uy',
+  // UEFA
+  'Alemania': 'de',
+  'Austria': 'at',
+  'Belgica': 'be',
+  'Croacia': 'hr',
+  'Escocia': 'gb-sct',
+  'Espana': 'es',
+  'Francia': 'fr',
+  'Inglaterra': 'gb-eng',
+  'Noruega': 'no',
+  'Paises Bajos': 'nl',
+  'Portugal': 'pt',
+  'Suiza': 'ch',
+  // CAF
+  'Argelia': 'dz',
+  'Cabo Verde': 'cv',
+  'Costa de Marfil': 'ci',
+  'Egipto': 'eg',
+  'Ghana': 'gh',
+  'Marruecos': 'ma',
+  'Senegal': 'sn',
+  'Sudafrica': 'za',
+  'Tunez': 'tn',
+  // AFC
+  'Arabia Saudita': 'sa',
+  'Australia': 'au',
+  'Catar': 'qa',
+  'Corea del Sur': 'kr',
+  'Iran': 'ir',
+  'Japon': 'jp',
+  'Jordania': 'jo',
+  'Uzbekistan': 'uz',
+  // OFC
+  'Nueva Zelanda': 'nz',
+  // Repechaje
+  'Bolivia': 'bo',
+  'Irak': 'iq',
+  'Italia': 'it',
+  'Jamaica': 'jm',
+  'RD Congo': 'cd',
+  'Turquia': 'tr',
+};
+
+// Equipos de repechaje (aun no confirmados para el Mundial 2026)
+export const PLAYOFF_TEAMS = new Set([
+  'Bolivia', 'Irak', 'Italia', 'Jamaica', 'RD Congo', 'Turquia',
+]);
+
 export function getFlag(equipo) {
   return FLAGS[equipo] || '🏳️';
+}
+
+export function getTeamBadgeUrl(equipo) {
+  const code = ISO_CODES[equipo];
+  if (!code) return null;
+  return `https://hatscripts.github.io/circle-flags/flags/${code}.svg`;
+}
+
+export function isPlayoffTeam(equipo) {
+  return PLAYOFF_TEAMS.has(equipo);
 }

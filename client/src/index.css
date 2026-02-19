@@ -1,47 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Russo+One&display=swap');
 
 @theme {
-  --color-negro: #111111;
-  --color-negro-light: #1a1a1a;
-  --color-negro-card: #222222;
+  --color-negro: #0a0a0a;
+  --color-negro-light: #141414;
+  --color-negro-card: #1a1a1a;
+  --color-negro-hover: #1e1e1e;
   --color-verde-dark: #1a472a;
-  --color-verde: #2d8544;
-  --color-verde-light: #3da357;
-  --color-dorado: #fbbf24;
-  --color-dorado-dark: #d97706;
-  --color-gris: #9ca3af;
+  --color-verde: #00c853;
+  --color-verde-light: #69f0ae;
+  --color-dorado: #ffffff;
+  --color-dorado-dark: #e0e0e0;
+  --color-accent: #ffffff;
+  --color-accent-dim: rgba(255,255,255,0.08);
+  --color-gris: #666666;
   --color-gris-light: #f3f4f6;
-  --font-russo: 'Russo One', sans-serif;
-  --font-nunito: 'Nunito', sans-serif;
+  --font-display: 'Bebas Neue', 'Impact', sans-serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
 }
 
 body {
-  font-family: var(--font-nunito);
-  background-color: #111111;
+  font-family: var(--font-body);
+  background-color: #0a0a0a;
   color: #e5e5e5;
   margin: 0;
   padding: 0;
   min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, .font-russo {
-  font-family: var(--font-russo);
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+
+/* Utility for old russo references */
+.font-russo {
+  font-family: var(--font-display);
 }
 
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #111;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 0;
 }
 
+/* === ANIMATIONS === */
 @keyframes shine {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -49,25 +61,227 @@ h1, h2, h3, .font-russo {
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-12px); }
+  50% { transform: translateY(-8px); }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.2); }
-  50% { box-shadow: 0 0 40px rgba(251, 191, 36, 0.5); }
+  0%, 100% { box-shadow: 0 0 0 rgba(255, 255, 255, 0); }
+  50% { box-shadow: 0 0 30px rgba(255, 255, 255, 0.06); }
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes stripe-move {
+  0% { background-position: 0 0; }
+  100% { background-position: 60px 0; }
+}
+
+@keyframes logo-reveal {
+  0% { clip-path: inset(0 100% 0 0); }
+  100% { clip-path: inset(0 0 0 0); }
 }
 
 .animate-fade-in {
   animation: fade-in 0.3s ease-out;
 }
 
+.animate-slide-up {
+  animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .sticker-shine {
-  background: linear-gradient(110deg, transparent 25%, rgba(255,255,255,0.15) 50%, transparent 75%);
+  background: linear-gradient(110deg, transparent 25%, rgba(255,255,255,0.1) 50%, transparent 75%);
   background-size: 200% 100%;
   animation: shine 3s ease-in-out infinite;
+}
+
+/* === ADIDAS-STYLE THREE STRIPES === */
+.three-stripes {
+  position: relative;
+}
+
+.three-stripes::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: repeating-linear-gradient(
+    to bottom,
+    white 0px,
+    white 6px,
+    transparent 6px,
+    transparent 9px
+  );
+  opacity: 0.15;
+}
+
+/* === BRAND MARK === */
+.brand-bar {
+  position: relative;
+}
+
+.brand-bar::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+}
+
+/* === EDITORIAL LOGO STYLE === */
+.logo-editorial {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  line-height: 0.85;
+}
+
+/* === GEOMETRIC ACCENT === */
+.geo-accent {
+  position: relative;
+}
+
+.geo-accent::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: white;
+}
+
+/* === CARD STYLE === */
+.card-adidas {
+  background: #141414;
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: all 0.2s ease;
+}
+
+.card-adidas:hover {
+  border-color: rgba(255,255,255,0.12);
+  background: #1a1a1a;
+}
+
+/* === PROGRESS BAR === */
+.progress-bar-track {
+  background: rgba(255,255,255,0.04);
+  height: 2px;
+}
+
+.progress-bar-fill {
+  background: white;
+  height: 2px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* === BUTTON STYLE === */
+.btn-primary {
+  background: white;
+  color: #0a0a0a;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  padding: 14px 32px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+}
+
+.btn-primary:hover {
+  background: #e0e0e0;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  padding: 10px 24px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+}
+
+.btn-secondary:hover {
+  border-color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.04);
+}
+
+/* === STAT BLOCK === */
+.stat-block {
+  text-align: center;
+  padding: 16px 0;
+}
+
+.stat-block .stat-number {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  line-height: 1;
+  color: white;
+}
+
+.stat-block .stat-label {
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  margin-top: 4px;
+}
+
+/* === SECTION DIVIDER === */
+.section-label {
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+}
+
+/* === TAB BAR ACTIVE LINE === */
+.tab-active-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: white;
+}
+
+/* === STICKER STATES === */
+.sticker-empty {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.sticker-owned {
+  background: linear-gradient(135deg, #141414, #1e1e1e);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.sticker-repeat {
+  background: linear-gradient(135deg, #1a1a1a, #252525);
+  border: 1px solid rgba(255,255,255,0.25);
 }

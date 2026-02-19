@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { useEffect } from 'react';
+import TeamBadge from '../components/TeamBadge';
 
 export default function Splash() {
   const navigate = useNavigate();
@@ -11,55 +12,61 @@ export default function Splash() {
   }, [user, navigate]);
 
   return (
-    <div className="min-h-dvh bg-negro flex flex-col items-center justify-center px-6 text-center relative overflow-hidden">
-      {/* Spotlight effect */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-dorado/5 rounded-full blur-[100px]" />
-
-      {/* Diagonal stripes */}
-      <div className="absolute inset-0 opacity-[0.03]"
-           style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, white 40px, white 41px)' }} />
-
-      {/* Trophy + Ball */}
-      <div className="relative mb-8 z-10">
-        <span className="text-8xl block" style={{ animation: 'float 3s ease-in-out infinite' }}>🏆</span>
-        <span className="text-4xl absolute -bottom-1 -right-6 animate-bounce">⚽</span>
+    <div className="min-h-dvh bg-negro flex flex-col items-center justify-center px-8 text-center relative overflow-hidden">
+      {/* Geometric background elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 right-0 w-[1px] h-full bg-white/[0.04] transform rotate-12 origin-top-right" />
+        <div className="absolute top-0 left-[30%] w-[1px] h-full bg-white/[0.03] transform -rotate-6" />
+        <div className="absolute inset-0 opacity-[0.015]"
+             style={{ backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
       </div>
 
-      {/* Logo */}
-      <h1 className="text-6xl text-dorado tracking-[0.15em] drop-shadow-lg z-10"
-          style={{ textShadow: '0 0 40px rgba(251,191,36,0.25)' }}>
-        PEGAGOL
-      </h1>
+      {/* Three Stripes Brand Mark */}
+      <div className="relative z-10 mb-10">
+        <div className="flex flex-col items-center gap-[3px] mb-8">
+          <div className="w-10 h-[4px] bg-[#00c853]" />
+          <div className="w-8 h-[4px] bg-[#2196f3]" />
+          <div className="w-6 h-[4px] bg-[#f44336]" />
+        </div>
 
-      {/* Branding */}
-      <p className="text-dorado/60 text-[10px] font-russo tracking-[0.4em] uppercase mt-2 z-10">
-        MUNDIAL FIFA 2026
-      </p>
-      <p className="text-white/30 text-xs mt-2 tracking-widest z-10">
-        USA &bull; MEXICO &bull; CANADA
-      </p>
-      <p className="text-white/20 text-xs mt-1 mb-10 z-10">
-        Intercambia estampas con tus compas
+        {/* Logo - Editorial Bold */}
+        <h1 className="logo-editorial text-[72px] text-white leading-[0.85] tracking-[0.08em]">
+          PEGA
+        </h1>
+        <h1 className="logo-editorial text-[72px] text-white leading-[0.85] tracking-[0.08em] -mt-1">
+          GOL
+        </h1>
+
+        <div className="w-12 h-[2px] bg-white/30 mx-auto mt-4 mb-3" />
+
+        <p className="text-[10px] text-white/25 tracking-[0.5em] uppercase font-medium">
+          WORLD CUP 2026
+        </p>
+      </div>
+
+      {/* Host countries */}
+      <div className="flex items-center gap-4 z-10 mb-3">
+        <TeamBadge team="Estados Unidos" size="md" />
+        <div className="w-[1px] h-4 bg-white/10" />
+        <TeamBadge team="Mexico" size="md" />
+        <div className="w-[1px] h-4 bg-white/10" />
+        <TeamBadge team="Canada" size="md" />
+      </div>
+
+      <p className="text-white/15 text-[9px] tracking-[0.3em] mb-12 z-10 uppercase">
+        USA &middot; MEX &middot; CAN
       </p>
 
       {/* CTA Button */}
       <button
         onClick={() => navigate('/registro')}
-        className="bg-dorado hover:bg-dorado-dark text-negro font-russo text-lg
-                   px-14 py-4 rounded-sm shadow-lg transform hover:scale-105
-                   transition-all active:scale-95 uppercase tracking-wider z-10"
-        style={{ animation: 'pulse-glow 2.5s ease-in-out infinite' }}
+        className="btn-primary z-10 w-full max-w-[280px]"
       >
-        ENTRAR AL ALBUM
+        ENTRAR
       </button>
 
-      {/* Host flags */}
-      <div className="flex gap-4 mt-10 text-2xl opacity-40 z-10">
-        <span>🇺🇸</span><span>🇲🇽</span><span>🇨🇦</span>
-      </div>
-
-      <p className="text-white/10 text-[10px] mt-6 z-10">
-        PANINI &bull; ESTAMPAS &bull; INTERCAMBIO
+      <p className="text-white/10 text-[8px] mt-8 z-10 tracking-[0.3em] uppercase">
+        ALBUM DIGITAL DE ESTAMPAS
       </p>
     </div>
   );

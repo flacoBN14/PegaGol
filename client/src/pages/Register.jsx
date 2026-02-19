@@ -11,6 +11,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [showDemo, setShowDemo] = useState(false);
   const [demoUsers, setDemoUsers] = useState([]);
+  const [exiting, setExiting] = useState(false);
   const { login } = useUser();
   const navigate = useNavigate();
 
@@ -21,10 +22,11 @@ export default function Register() {
     try {
       const user = await registerUser(nombre.trim(), salon);
       login(user);
-      navigate('/album', { replace: true });
+      // Trigger exit animation
+      setExiting(true);
+      setTimeout(() => navigate('/album', { replace: true }), 600);
     } catch {
       alert('Error al registrarse. Intenta de nuevo.');
-    } finally {
       setLoading(false);
     }
   };
@@ -41,96 +43,130 @@ export default function Register() {
 
   const loginAsDemo = (user) => {
     login(user);
-    navigate('/album', { replace: true });
+    setExiting(true);
+    setTimeout(() => navigate('/album', { replace: true }), 600);
   };
 
   return (
-    <div className="min-h-dvh bg-negro flex flex-col items-center justify-center px-6 relative overflow-hidden">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-verde/5 rounded-full blur-[100px]" />
-      <div className="absolute inset-0 opacity-[0.03]"
-           style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, white 40px, white 41px)' }} />
+    <div className={`min-h-dvh bg-negro flex flex-col relative overflow-hidden transition-all duration-500
+      ${exiting ? 'opacity-0 scale-105' : 'opacity-100 scale-100'}`}>
+      {/* Background - Editorial B&W football imagery */}
+      <div className="absolute inset-0">
+        <img
+          src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80"
+          alt=""
+          className="w-full h-full object-cover opacity-[0.07] grayscale"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-negro via-negro/90 to-negro/50" />
+      </div>
 
-      <div className="w-full max-w-sm z-10">
-        <div className="text-center mb-8">
-          <span className="text-5xl">⚽</span>
-          <h1 className="text-3xl text-dorado mt-2 tracking-wider">PEGAGOL</h1>
-          <p className="text-white/30 text-[10px] tracking-[0.3em] uppercase mt-1">MUNDIAL FIFA 2026</p>
-        </div>
+      {/* Geometric lines */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-[20%] w-[1px] h-full bg-white/[0.03]" />
+        <div className="absolute top-0 right-[25%] w-[1px] h-full bg-white/[0.02]" />
+      </div>
 
-        <form onSubmit={handleSubmit} className="bg-negro-light/80 border border-white/10 rounded-sm p-6 space-y-5">
-          <div>
-            <label className="text-white/50 text-[10px] font-bold uppercase tracking-wider block mb-2">
-              TU NOMBRE
-            </label>
-            <input
-              type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              placeholder="Ej: Carlos"
-              maxLength={30}
-              className="w-full bg-negro border border-white/10 rounded-sm px-4 py-3
-                         text-white placeholder-white/20 focus:outline-none focus:border-dorado
-                         transition-colors text-sm"
-            />
-          </div>
-
-          <div>
-            <label className="text-white/50 text-[10px] font-bold uppercase tracking-wider block mb-2">
-              TU SALON
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              {SALONES.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => setSalon(s)}
-                  className={`py-2.5 rounded-sm text-sm font-bold transition-all
-                    ${salon === s
-                      ? 'bg-dorado text-negro'
-                      : 'bg-white/5 text-white/40 border border-white/10 hover:border-white/20'
-                    }`}
-                >
-                  {s}
-                </button>
-              ))}
+      {/* Content */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 relative z-10">
+        <div className="w-full max-w-sm">
+          {/* Logo header - entrance animation */}
+          <div className="text-center mb-10 animate-slide-up">
+            <div className="flex flex-col items-center gap-[2px] mb-4"
+                 style={{ animation: 'fade-in 0.8s ease-out 0.2s both' }}>
+              <div className="w-7 h-[3px] bg-[#00c853]" />
+              <div className="w-5.5 h-[3px] bg-[#2196f3]" />
+              <div className="w-4 h-[3px] bg-[#f44336]" />
             </div>
+            <h1 className="logo-editorial text-[36px] text-white leading-none tracking-[0.1em]"
+                style={{ animation: 'fade-in 0.6s ease-out 0.3s both' }}>
+              PEGAGOL
+            </h1>
+            <p className="text-white/15 text-[8px] tracking-[0.4em] uppercase mt-2"
+               style={{ animation: 'fade-in 0.6s ease-out 0.5s both' }}>
+              WORLD CUP 2026
+            </p>
           </div>
 
-          <button
-            type="submit"
-            disabled={!nombre.trim() || !salon || loading}
-            className="w-full bg-dorado hover:bg-dorado-dark text-negro font-russo
-                       text-base py-3.5 rounded-sm disabled:opacity-30
-                       disabled:cursor-not-allowed transition-all active:scale-[0.98]
-                       uppercase tracking-wider"
-          >
-            {loading ? 'ENTRANDO...' : 'ENTRAR'}
-          </button>
-        </form>
+          {/* Form - staggered entrance */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div style={{ animation: 'slide-up 0.5s ease-out 0.4s both' }}>
+              <label className="text-white/30 text-[9px] font-bold uppercase tracking-[0.2em] block mb-2">
+                TU NOMBRE
+              </label>
+              <input
+                type="text"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                placeholder="Ej: Carlos"
+                maxLength={30}
+                className="w-full bg-transparent border-b border-white/15 px-0 py-3
+                           text-white placeholder-white/10 focus:outline-none focus:border-white/40
+                           transition-colors text-sm tracking-wide"
+              />
+            </div>
 
-        <button
-          onClick={handleDemoLogin}
-          className="w-full mt-4 text-white/20 text-xs hover:text-white/40 transition-colors"
-        >
-          Entrar como usuario de prueba
-        </button>
+            <div style={{ animation: 'slide-up 0.5s ease-out 0.5s both' }}>
+              <label className="text-white/30 text-[9px] font-bold uppercase tracking-[0.2em] block mb-3">
+                TU SALON
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {SALONES.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setSalon(s)}
+                    className={`py-2.5 text-[11px] font-bold transition-all tracking-wider
+                      ${salon === s
+                        ? 'bg-white text-negro'
+                        : 'bg-transparent text-white/25 border border-white/10 hover:border-white/20'
+                      }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-        {showDemo && (
-          <div className="mt-3 bg-negro-light border border-white/10 rounded-sm p-4 space-y-2">
-            <p className="text-white/30 text-[10px] uppercase tracking-wider mb-2">Elige un usuario:</p>
-            {demoUsers.map((u) => (
+            <div style={{ animation: 'slide-up 0.5s ease-out 0.6s both' }}>
               <button
-                key={u.id}
-                onClick={() => loginAsDemo(u)}
-                className="w-full text-left bg-white/5 hover:bg-white/10 rounded-sm px-4 py-2.5
-                           text-white/70 text-sm transition-colors border border-white/5"
+                type="submit"
+                disabled={!nombre.trim() || !salon || loading}
+                className="btn-primary w-full disabled:opacity-20 disabled:cursor-not-allowed"
               >
-                <span className="font-bold">{u.nombre}</span>
-                <span className="text-white/30 ml-2">Salon {u.salon}</span>
+                {loading ? 'ENTRANDO...' : 'ENTRAR'}
               </button>
-            ))}
+            </div>
+          </form>
+
+          {/* Demo login */}
+          <div style={{ animation: 'fade-in 0.5s ease-out 0.8s both' }}>
+            <button
+              onClick={handleDemoLogin}
+              className="w-full mt-6 text-white/15 text-[10px] hover:text-white/30 transition-colors
+                         tracking-[0.15em] uppercase"
+            >
+              Entrar como usuario de prueba
+            </button>
+
+            {showDemo && (
+              <div className="mt-3 border border-white/[0.06] p-4 space-y-2 animate-fade-in">
+                <p className="text-white/20 text-[9px] uppercase tracking-[0.2em] mb-3">Elige un usuario:</p>
+                {demoUsers.map((u) => (
+                  <button
+                    key={u.id}
+                    onClick={() => loginAsDemo(u)}
+                    className="w-full text-left bg-white/[0.03] hover:bg-white/[0.06] px-4 py-2.5
+                               text-white/50 text-[11px] transition-colors border border-white/[0.04]
+                               hover:border-white/10"
+                  >
+                    <span className="font-semibold text-white/70">{u.nombre}</span>
+                    <span className="text-white/20 ml-2 text-[10px]">Salon {u.salon}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

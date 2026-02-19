@@ -4,38 +4,43 @@ export default function QRCode({ onClose }) {
   const url = window.location.origin;
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-6"
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 px-6"
          onClick={onClose}>
-      <div className="bg-white rounded-3xl p-8 text-center max-w-sm w-full shadow-2xl"
+      <div className="bg-negro-light border border-white/[0.06] p-8 text-center max-w-sm w-full animate-slide-up"
            onClick={(e) => e.stopPropagation()}>
-        <h3 className="text-verde-dark text-xl mb-1">Comparte PegaGol</h3>
-        <p className="text-gray-400 text-xs mb-6">
-          Escanea este codigo para entrar a la app
+        {/* Logo */}
+        <div className="flex flex-col items-center gap-[2px] mb-4">
+          <div className="w-6 h-[2px] bg-[#00c853]" />
+          <div className="w-5 h-[2px] bg-[#2196f3]" />
+          <div className="w-4 h-[2px] bg-[#f44336]" />
+        </div>
+        <h3 className="font-display text-[20px] text-white tracking-wide mb-1">COMPARTE</h3>
+        <p className="text-white/20 text-[9px] tracking-[0.2em] uppercase mb-6">
+          Escanea para entrar a PegaGol
         </p>
 
-        <div className="bg-verde-dark rounded-2xl p-6 inline-block mb-6">
+        <div className="bg-negro p-5 inline-block mb-5 border border-white/[0.04]">
           <QRCodeSVG
             value={url}
-            size={200}
-            bgColor="#1a472a"
-            fgColor="#fbbf24"
+            size={180}
+            bgColor="#0a0a0a"
+            fgColor="#ffffff"
             level="M"
             includeMargin={false}
           />
         </div>
 
-        <p className="text-[10px] text-gray-400 mb-4 break-all">{url}</p>
+        <p className="text-[8px] text-white/15 mb-5 break-all tracking-wider">{url}</p>
 
-        <p className="text-xs text-gray-500 mb-4">
-          Imprime este QR y pegalo en tu salon para que tus compas se unan
+        <p className="text-[9px] text-white/20 mb-6 tracking-wider leading-relaxed">
+          Imprime este QR y pegalo en tu salon
         </p>
 
         <button
           onClick={onClose}
-          className="w-full bg-verde text-white py-3 rounded-xl font-bold text-sm
-                     hover:bg-verde-dark transition-colors"
+          className="btn-primary w-full"
         >
-          Cerrar
+          CERRAR
         </button>
       </div>
     </div>

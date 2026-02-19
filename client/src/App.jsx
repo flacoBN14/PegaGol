@@ -9,6 +9,7 @@ import Album from './pages/Album';
 import Search from './pages/Search';
 import Trades from './pages/Trades';
 import Chat from './pages/Chat';
+import Mundial from './pages/Mundial';
 import Layout from './components/Layout';
 
 function ProtectedRoute({ children }) {
@@ -50,6 +51,7 @@ export default function App() {
           >
             <Route path="/album" element={<Album />} />
             <Route path="/buscar" element={<Search />} />
+            <Route path="/mundial" element={<Mundial />} />
             <Route path="/cambios" element={<Trades />} />
             <Route path="/chat" element={<Chat />} />
           </Route>

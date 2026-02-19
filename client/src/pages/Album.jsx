@@ -1,7 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useUser } from '../context/UserContext';
 import { getUserAlbum, toggleSticker } from '../lib/api';
-import { CONFEDERATIONS, getFlag } from '../lib/constants';
+import { isPlayoffTeam } from '../lib/constants';
+import { GROUPS } from '../lib/groupData';
+import TeamBadge from '../components/TeamBadge';
 
 export default function Album() {
   const { user } = useUser();
@@ -61,108 +63,159 @@ export default function Album() {
     }
   };
 
+  // Organize teams by World Cup groups
+  const teamsByGroup = useMemo(() => {
+    if (!album) return [];
+    const groupKeys = Object.keys(GROUPS).sort();
+    const result = [];
+
+    // Teams that are in groups
+    const teamsInGroups = new Set();
+
+    for (const key of groupKeys) {
+      const group = GROUPS[key];
+      const groupTeams = group.teams
+        .filter(team => team !== 'Por definir' && album.equipos[team])
+        .map(team => {
+          teamsInGroups.add(team);
+          return { name: team, stickers: album.equipos[team] };
+        });
+
+      if (groupTeams.length > 0) {
+        result.push({ key, label: `GRUPO ${key}`, teams: groupTeams, isPlayoff: false });
+      }
+    }
+
+    // Playoff teams not in any group
+    const playoffTeams = Object.keys(album.equipos)
+      .filter(team => !teamsInGroups.has(team) && isPlayoffTeam(team))
+      .map(team => ({ name: team, stickers: album.equipos[team] }));
+
+    if (playoffTeams.length > 0) {
+      result.push({ key: 'PO', label: 'REPECHAJE', teams: playoffTeams, isPlayoff: true });
+    }
+
+    return result;
+  }, [album]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-dorado text-sm animate-pulse uppercase tracking-wider">Cargando album...</div>
+        <div className="text-white/30 text-[11px] animate-pulse uppercase tracking-[0.2em]">
+          Cargando album...
+        </div>
       </div>
     );
   }
 
   if (!album) return null;
 
-  const { stats, equipos } = album;
+  const { stats } = album;
   const total = stats.tiene + stats.faltan;
   const percent = total > 0 ? Math.round((stats.tiene / total) * 100) : 0;
 
   return (
     <div className="pb-4">
-      {/* Stats */}
-      <div className="bg-negro-light border border-white/5 rounded-sm mx-4 mt-4 p-4">
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="text-[10px] text-white/30 uppercase tracking-[0.2em]">MI ALBUM</h2>
-          <span className="text-dorado font-russo text-2xl">{percent}%</span>
+      {/* Stats Header - Adidas style */}
+      <div className="mx-5 mt-5">
+        <div className="flex items-baseline justify-between mb-4">
+          <div>
+            <h2 className="font-display text-[28px] text-white leading-none tracking-wide">
+              MI ALBUM
+            </h2>
+            <p className="text-[9px] text-white/15 tracking-[0.2em] uppercase mt-1">
+              {stats.tiene} de {total} estampas
+            </p>
+          </div>
+          <span className="font-display text-[40px] text-white leading-none">{percent}%</span>
         </div>
 
-        <div className="w-full bg-white/5 rounded-full h-2 mb-4">
-          <div
-            className="bg-gradient-to-r from-verde to-dorado h-2 rounded-full transition-all duration-500"
-            style={{ width: `${percent}%` }}
-          />
+        {/* Progress bar */}
+        <div className="progress-bar-track mb-5">
+          <div className="progress-bar-fill" style={{ width: `${percent}%` }} />
         </div>
 
-        <div className="grid grid-cols-3 gap-3 text-center">
-          <div className="bg-white/5 rounded-sm py-3">
-            <div className="text-verde font-russo text-xl">{stats.tiene}</div>
-            <div className="text-white/30 text-[9px] uppercase tracking-wider">Tengo</div>
+        {/* Stat blocks */}
+        <div className="grid grid-cols-3 gap-[1px] bg-white/[0.04]">
+          <div className="bg-negro py-4 text-center">
+            <div className="font-display text-[24px] text-white leading-none">{stats.tiene}</div>
+            <div className="text-[8px] text-white/20 tracking-[0.2em] uppercase mt-1">Tengo</div>
           </div>
-          <div className="bg-white/5 rounded-sm py-3">
-            <div className="text-dorado font-russo text-xl">{stats.repetidas}</div>
-            <div className="text-white/30 text-[9px] uppercase tracking-wider">Repetidas</div>
+          <div className="bg-negro py-4 text-center">
+            <div className="font-display text-[24px] text-white leading-none">{stats.repetidas}</div>
+            <div className="text-[8px] text-white/20 tracking-[0.2em] uppercase mt-1">Repetidas</div>
           </div>
-          <div className="bg-white/5 rounded-sm py-3">
-            <div className="text-white/40 font-russo text-xl">{stats.faltan}</div>
-            <div className="text-white/30 text-[9px] uppercase tracking-wider">Faltan</div>
+          <div className="bg-negro py-4 text-center">
+            <div className="font-display text-[24px] text-white/30 leading-none">{stats.faltan}</div>
+            <div className="text-[8px] text-white/20 tracking-[0.2em] uppercase mt-1">Faltan</div>
           </div>
         </div>
       </div>
 
-      <p className="text-center text-[9px] text-white/15 mt-3 mb-1 px-4 uppercase tracking-wider">
-        Toca una estampa: falta &rarr; tengo &rarr; repetida
+      <p className="text-center text-[8px] text-white/10 mt-4 mb-2 px-5 tracking-[0.15em] uppercase">
+        Toca: falta &rarr; tengo &rarr; repetida
       </p>
 
-      {/* Confederations */}
-      <div className="px-4 mt-2 space-y-4">
-        {CONFEDERATIONS.map((conf) => {
-          const confTeams = conf.teams
-            .filter(team => equipos[team])
-            .map(team => ({ name: team, stickers: equipos[team] }));
-
-          if (confTeams.length === 0) return null;
-
-          const confOwned = confTeams.reduce((sum, t) =>
+      {/* Teams by Group */}
+      <div className="px-5 mt-3 space-y-5">
+        {teamsByGroup.map((group) => {
+          const groupOwned = group.teams.reduce((sum, t) =>
             sum + t.stickers.filter(s => s.cantidad > 0).length, 0);
-          const confTotal = confTeams.reduce((sum, t) => sum + t.stickers.length, 0);
+          const groupTotal = group.teams.reduce((sum, t) => sum + t.stickers.length, 0);
 
           return (
-            <div key={conf.id}>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm">{conf.emoji}</span>
-                <h3 className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">
-                  {conf.name}
-                </h3>
-                <span className="text-[10px] text-white/15">{confOwned}/{confTotal}</span>
-                <div className="flex-1 h-px bg-white/5" />
+            <div key={group.key}>
+              {/* Group header */}
+              <div className="flex items-center gap-3 mb-2">
+                <span className={`font-display text-[14px] tracking-wide ${
+                  group.isPlayoff ? 'text-white/20' : 'text-white/50'
+                }`}>
+                  {group.label}
+                </span>
+                {group.isPlayoff && (
+                  <span className="text-[7px] border border-white/10 text-white/25 px-1.5 py-0.5 uppercase tracking-wider">
+                    Por confirmar
+                  </span>
+                )}
+                <span className="text-[9px] text-white/10 font-medium">{groupOwned}/{groupTotal}</span>
+                <div className="flex-1 h-[1px] bg-white/[0.04]" />
               </div>
 
-              <div className="space-y-1">
-                {confTeams.map(({ name, stickers }) => {
+              {/* Teams in this group */}
+              <div className="space-y-[2px]">
+                {group.teams.map(({ name, stickers }) => {
                   const owned = stickers.filter(s => s.cantidad > 0).length;
                   const isOpen = openTeam === name;
+                  const isPlayoff = isPlayoffTeam(name);
 
                   return (
-                    <div key={name} className="bg-negro-light border border-white/5 rounded-sm overflow-hidden">
+                    <div key={name} className={`card-adidas overflow-hidden ${
+                      isPlayoff ? 'border-dashed opacity-70' : ''
+                    }`}>
                       <button
                         onClick={() => setOpenTeam(isOpen ? null : name)}
                         className="w-full flex items-center justify-between px-3 py-2.5
                                    hover:bg-white/[0.02] transition-colors"
                       >
                         <div className="flex items-center gap-2.5">
-                          <span className="text-lg">{getFlag(name)}</span>
+                          <TeamBadge team={name} size="sm" />
                           <div className="text-left">
-                            <div className="font-bold text-white/80 text-xs uppercase tracking-wide">{name}</div>
-                            <div className="text-[10px] text-white/20">{owned}/{stickers.length}</div>
+                            <span className="font-semibold text-white/70 text-[11px] uppercase tracking-wide block">
+                              {name}
+                            </span>
+                            <span className="text-[9px] text-white/15">{owned}/{stickers.length}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-14 bg-white/5 rounded-full h-1">
+                        <div className="flex items-center gap-3">
+                          {/* Mini progress */}
+                          <div className="w-12 h-[2px] bg-white/[0.04]">
                             <div
-                              className="bg-verde h-1 rounded-full transition-all"
+                              className="h-[2px] bg-white/40 transition-all"
                               style={{ width: `${(owned / stickers.length) * 100}%` }}
                             />
                           </div>
                           <svg
-                            className={`w-3.5 h-3.5 text-white/20 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                            className={`w-3 h-3 text-white/15 transition-transform ${isOpen ? 'rotate-180' : ''}`}
                             fill="none" viewBox="0 0 24 24" stroke="currentColor"
                           >
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -171,37 +224,47 @@ export default function Album() {
                       </button>
 
                       {isOpen && (
-                        <div className="px-2 pb-2 grid grid-cols-4 gap-1.5 animate-fade-in">
+                        <div className="px-2 pb-2 grid grid-cols-4 gap-1 animate-fade-in">
                           {stickers.map((s) => (
                             <button
                               key={s.id}
                               onClick={() => handleToggle(s.id)}
-                              className={`relative rounded-sm overflow-hidden text-center transition-all active:scale-95
+                              className={`relative overflow-hidden text-center transition-all active:scale-95
                                 ${s.cantidad === 0
-                                  ? 'bg-white/[0.03] border border-dashed border-white/10'
+                                  ? 'sticker-empty'
                                   : s.cantidad === 1
-                                    ? 'bg-gradient-to-b from-verde-dark to-verde border border-verde/50 shadow-md'
-                                    : 'bg-gradient-to-b from-dorado-dark to-dorado border border-dorado/50 shadow-md'
+                                    ? 'sticker-owned'
+                                    : 'sticker-repeat'
                                 }`}
                             >
-                              <div className={`text-[9px] font-bold py-0.5
-                                ${s.cantidad === 0 ? 'bg-white/[0.03] text-white/20' : 'bg-black/20 text-white/80'}`}>
-                                {s.codigo}
-                              </div>
-                              <div className="px-1 py-1.5">
-                                <div className={`text-[8px] leading-tight truncate
-                                  ${s.cantidad === 0 ? 'text-white/15' : 'text-white/90 font-semibold'}`}>
-                                  {s.nombreJugador}
+                              {s.numero === 1 && s.cantidad > 0 ? (
+                                <div className="px-1 py-2 flex flex-col items-center gap-1">
+                                  <TeamBadge team={s.equipo || name} size="xs" />
+                                  <div className="text-[7px] text-white/60 font-semibold uppercase tracking-wide">Escudo</div>
+                                  <div className="text-[8px] font-bold text-white/40">{s.codigo}</div>
                                 </div>
-                              </div>
+                              ) : (
+                                <>
+                                  <div className={`text-[8px] font-bold py-0.5
+                                    ${s.cantidad === 0 ? 'bg-white/[0.02] text-white/15' : 'bg-white/[0.06] text-white/50'}`}>
+                                    {s.codigo}
+                                  </div>
+                                  <div className="px-1 py-1.5">
+                                    <div className={`text-[7px] leading-tight truncate
+                                      ${s.cantidad === 0 ? 'text-white/10' : 'text-white/60 font-medium'}`}>
+                                      {s.nombreJugador}
+                                    </div>
+                                  </div>
+                                </>
+                              )}
                               {s.cantidad >= 2 && (
                                 <div className="absolute inset-0 sticker-shine pointer-events-none" />
                               )}
                               {s.cantidad >= 2 && (
-                                <span className="absolute -top-0.5 -right-0.5 bg-negro text-dorado
-                                                 text-[9px] font-bold rounded-sm w-4 h-4 flex items-center
-                                                 justify-center shadow border border-dorado/30">
-                                  x{s.cantidad}
+                                <span className="absolute -top-0.5 -right-0.5 bg-white text-negro
+                                                 text-[8px] font-bold w-3.5 h-3.5 flex items-center
+                                                 justify-center">
+                                  {s.cantidad}
                                 </span>
                               )}
                             </button>
